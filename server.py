@@ -2,7 +2,7 @@ import socket
 from threading import Thread
 
 # Accept connection outside localhost
-HOST = '127.0.0.1'
+HOST = ''
 PORT = 12397
 BUFFER_SIZE = 1024
 clients = {}
@@ -14,7 +14,7 @@ def accept_connections():
   while True:
     client, client_address = server_socket.accept()
     print("%s: Entered the chat!" % client_address[0])
-    client.send(bytes("Type your message, and press enter (quit! to exit)", "utf-8"))
+    client.send(bytes("Type your message, and press enter (quit! to exit), ", "utf-8"))
     addresses[client] = client_address
 
     # For each client, create a thread to handle him
