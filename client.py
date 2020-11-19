@@ -5,6 +5,7 @@ import socket
 from threading import Thread
 
 HOST = "192.168.0.112"
+# HOST = "127.0.0.1"
 PORT = 12397
 BUFFER_SIZE = 1024
 running = True
@@ -57,7 +58,7 @@ def getInput(stdscr: curses.initscr()):
         break
       if isinstance(user_input, str) and user_input.isprintable():
         msg += user_input
-      if user_input == curses.KEY_BACKSPACE: msg = msg[:-1]
+      if user_input == curses.KEY_BACKSPACE or user_input == '\x7f': msg = msg[:-1]
 
       stdscr.addstr(rows - 1, len("Digite sua Mensagem: "), msg)
 

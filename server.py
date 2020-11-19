@@ -2,7 +2,7 @@ import socket
 from threading import Thread
 
 # Accept connection outside localhost
-HOST = ''
+HOST = '192.168.0.112'
 PORT = 12397
 BUFFER_SIZE = 1024
 clients = {}
