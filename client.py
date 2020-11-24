@@ -3,31 +3,23 @@ import time
 import sys
 import socket
 from threading import Thread
+from client_class import Client 
 
-HOST = "192.168.0.112"
-# HOST = "127.0.0.1"
-PORT = 12397
-BUFFER_SIZE = 1024
 running = True
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((HOST, PORT))
-client_socket.send(bytes(sys.argv[1], "utf-8"))
 
 def reset_screen(stdscr):
   curses.nocbreak()
   stdscr.keypad(False)
   curses.endwin()
 
-def receive(stdscr: curses.initscr()):
+def receive(stdscr, client_socket):
   y = 0
 
   while running:
     try:
       rows, cols = stdscr.getmaxyx()
-      msg = client_socket.recv(BUFFER_SIZE).decode("utf-8")
-      
-      if y == rows - 5: stdscr.scroll(5)
-      
+      msg = client_socket.recv()
+
       if repr(msg) != '':
         stdscr.insstr(y, 0, msg)
         stdscr.move(rows - 1, len("Digite sua Mensagem: "))
@@ -38,7 +30,7 @@ def receive(stdscr: curses.initscr()):
       break
   reset_screen(stdscr)
 
-def getInput(stdscr: curses.initscr()):
+def getInput(stdscr, client_socket):
   msg = ""
   user_input = ''
 
@@ -58,25 +50,29 @@ def getInput(stdscr: curses.initscr()):
         break
       if isinstance(user_input, str) and user_input.isprintable():
         msg += user_input
-      if user_input == curses.KEY_BACKSPACE or user_input == '\x7f': msg = msg[:-1]
+      if user_input == curses.KEY_BACKSPACE or user_input == '\x7f': 
+        msg = msg[:-1]
 
       stdscr.addstr(rows - 1, len("Digite sua Mensagem: "), msg)
-
-    
-    client_socket.send(bytes(msg, "utf-8"))
+    client_socket.send(msg)
   
   running = False
   client_socket.close()
   reset_screen(stdscr)
 
 if __name__ == "__main__":
+  HOST = "192.168.0.112"
+  PORT = 12397
+  client_socket = Client(HOST)
+  client_socket.connect()
+  client_socket.send(input("Username: "))
+
   stdscr = curses.initscr()
   curses.cbreak()
-  # curses.noecho()
   stdscr.keypad(True)
   stdscr.scrollok(True)
   stdscr.clear()
-  receive_thread = Thread(target=receive, args=[stdscr])
-  user_input = Thread(target=getInput, args=[stdscr])
+  receive_thread = Thread(target=receive, args=[stdscr, client_socket])
+  user_input = Thread(target=getInput, args=[stdscr, client_socket])
   receive_thread.start()
   user_input.start()
