@@ -43,4 +43,3 @@ if __name__ == "__main__":
 
   ACCEPT_THREAD = Thread(target=accept_connections, args=[server_socket])
   ACCEPT_THREAD.start()
-  ACCEPT_THREAD.join()

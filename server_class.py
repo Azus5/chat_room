@@ -28,5 +28,6 @@ class ServerSocket:
       socket.close()
 
   def shutdown(self):
+    self.running = False
     self.close_connections()
     self.socket.close()
